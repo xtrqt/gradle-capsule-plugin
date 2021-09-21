@@ -5,8 +5,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.ResolvedArtifact;
+import org.gradle.api.artifacts.*;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.BasePluginConvention;
 import org.gradle.api.plugins.JavaApplication;
@@ -98,10 +97,10 @@ public abstract class PackageCapsuleTask
       final Configuration embedConfiguration = doGetEmbedConfiguration();
       final Map<String, String> manifestAttributes = doGetManifestAttributes();
 
-      final Set<ResolvedArtifact> capsuleResolvedArtifacts = capsuleConfiguration.copy().getResolvedConfiguration()
-          .getResolvedArtifacts();
-      final Set<ResolvedArtifact> runtimeResolvedArtifacts = embedConfiguration.copy().getResolvedConfiguration()
-          .getResolvedArtifacts();
+      final Set<ResolvedArtifact> capsuleResolvedArtifacts = capsuleConfiguration
+          .getResolvedConfiguration().getResolvedArtifacts();
+      final Set<ResolvedArtifact> runtimeResolvedArtifacts = embedConfiguration
+          .getResolvedConfiguration().getResolvedArtifacts();
 
       final File libsDir = basePluginConvention.getLibsDirectory().getAsFile().get();
       libsDir.mkdirs();

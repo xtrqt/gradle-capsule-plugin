@@ -11,6 +11,6 @@ public class CapsulePlugin
     project.getExtensions().create("capsule", CapsuleExtension.class);
 
     project.getTasks().register("packageFatCapsule", PackageCapsuleTask.class,
-        task -> task.dependsOn("jar"));
+        task -> task.dependsOn("jar", "build"));
   }
 }
