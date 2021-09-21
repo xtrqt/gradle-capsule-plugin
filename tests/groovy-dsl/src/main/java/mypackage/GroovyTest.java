@@ -2,7 +2,7 @@ package mypackage;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class MyApp {
+public class GroovyTest {
 
   public static void main(String[] args)
       throws Exception {

@@ -12,5 +12,5 @@ repositories {
 }
 
 application {
-    mainClass.set("mypackage.MyApp")
+    mainClass.set("mypackage.KotlinTest")
 }
