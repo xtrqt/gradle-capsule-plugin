@@ -98,9 +98,9 @@ public abstract class PackageCapsuleTask
       final Configuration embedConfiguration = doGetEmbedConfiguration();
       final Map<String, String> manifestAttributes = doGetManifestAttributes();
 
-      final Set<ResolvedArtifact> capsuleResolvedArtifacts = capsuleConfiguration.getResolvedConfiguration()
+      final Set<ResolvedArtifact> capsuleResolvedArtifacts = capsuleConfiguration.copy().getResolvedConfiguration()
           .getResolvedArtifacts();
-      final Set<ResolvedArtifact> runtimeResolvedArtifacts = embedConfiguration.getResolvedConfiguration()
+      final Set<ResolvedArtifact> runtimeResolvedArtifacts = embedConfiguration.copy().getResolvedConfiguration()
           .getResolvedArtifacts();
 
       final File libsDir = basePluginConvention.getLibsDirectory().getAsFile().get();
