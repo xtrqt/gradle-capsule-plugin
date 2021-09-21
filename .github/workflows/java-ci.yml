@@ -15,3 +15,6 @@ jobs:
       - name: Build with Gradle
         working-directory: plugin
         run: ./gradlew build
+      - name: Test composite build
+        working-directory: tests/composite-build/subproject3
+        run: ./gradlew packageFatCapsule
