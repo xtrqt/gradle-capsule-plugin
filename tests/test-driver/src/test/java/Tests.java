@@ -30,7 +30,7 @@ public class Tests {
         .redirectError(new NullOutputStream())
         .readOutput(true).execute()
         .outputUTF8());
-    Assert.assertEquals("hELLO, bOB", output);
+    Assert.assertEquals("hELLO, bOB!", output);
   }
 
   @Test
@@ -42,6 +42,6 @@ public class Tests {
         .redirectError(new NullOutputStream())
         .readOutput(true).execute()
         .outputUTF8());
-    Assert.assertEquals("hELLO, bOB", output);
+    Assert.assertEquals("hELLO, bOB!", output);
   }
 }
