@@ -7,6 +7,7 @@ plugins {
 dependencies {
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.apache.commons:commons-lang3:3.12.0")
+    testRuntimeOnly("org.slf4j:slf4j-simple:1.7.32")
     testImplementation("org.zeroturnaround:zt-exec:1.12")
 }
 
