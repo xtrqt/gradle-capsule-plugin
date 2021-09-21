@@ -1,8 +1,11 @@
 package com.github.ngyewch.gradle;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
@@ -12,6 +15,7 @@ public class CapsulePackager
     implements Closeable {
 
   private final JarOutputStream jarOutputStream;
+  private final Set<String> filenameSet = new HashSet<>();
 
   public CapsulePackager(OutputStream outputStream, Manifest manifest)
       throws IOException {
@@ -52,7 +56,7 @@ public class CapsulePackager
 
   private void addMainJar(File jarFile, String entryName)
       throws IOException {
-    addJar("", jarFile, entryName);
+    addJar(jarFile, entryName);
   }
 
   public void addLibJar(File jarFile)
@@ -62,12 +66,26 @@ public class CapsulePackager
 
   private void addLibJar(File jarFile, String entryName)
       throws IOException {
-    addJar("", jarFile, entryName);
+    addJar(jarFile, entryName);
   }
 
-  private void addJar(String prefix, File jarFile, String entryName)
+  private void addJar(File jarFile, String entryName)
       throws IOException {
-    final JarEntry jarEntry = new JarEntry(String.format("%s%s", prefix, entryName));
+    if (filenameSet.contains(entryName)) {
+      final String baseName = FilenameUtils.getBaseName(entryName);
+      final String extension = FilenameUtils.getExtension(entryName);
+      int i = 1;
+      while (true) {
+        entryName = baseName + "-" + i + (extension.equals("") ? "" : "." + extension);
+        if (!filenameSet.contains(entryName)) {
+          break;
+        }
+        i++;
+      }
+    }
+    filenameSet.add(entryName);
+
+    final JarEntry jarEntry = new JarEntry(entryName);
     jarEntry.setTime(jarFile.lastModified());
     jarEntry.setMethod(JarEntry.STORED);
     jarEntry.setSize(jarFile.length());
