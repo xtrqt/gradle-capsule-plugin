@@ -3,35 +3,21 @@ package com.github.ngyewch.gradle;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
-import java.util.jar.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 
 public class CapsulePackager
     implements Closeable {
 
-  private static final String APPLICATION_CLASS_MANIFEST_KEY = "Application-Class";
-  private static final String APPLICATION_ID_MANIFEST_KEY = "Application-ID";
-  private static final String MIN_JAVA_VERSION_MANIFEST_KEY = "Min-Java-Version";
-  private static final String PREMAIN_CLASS_MANIFEST_KEY = "Premain-Class";
-  private static final String SYSTEM_PROPERTIES_MANIFEST_KEY = "System-Properties";
-
-  private static final String DEFAULT_MAIN_CLASS = "Capsule";
-  private static final String DEFAULT_PREMAIN_CLASS = "Capsule";
-
   private final JarOutputStream jarOutputStream;
 
-  public CapsulePackager(OutputStream outputStream, String mainClassName, Manifest manifest)
+  public CapsulePackager(OutputStream outputStream, Manifest manifest)
       throws IOException {
     super();
 
-    final Manifest adjustedManifest = new Manifest(manifest);
-    if (adjustedManifest.getMainAttributes().getValue(Attributes.Name.MANIFEST_VERSION) == null) {
-      adjustedManifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-    }
-    adjustedManifest.getMainAttributes().put(Attributes.Name.MAIN_CLASS, DEFAULT_MAIN_CLASS);
-    adjustedManifest.getMainAttributes().putValue(PREMAIN_CLASS_MANIFEST_KEY, DEFAULT_PREMAIN_CLASS);
-    adjustedManifest.getMainAttributes().putValue(APPLICATION_CLASS_MANIFEST_KEY, mainClassName);
-
-    jarOutputStream = new JarOutputStream(outputStream, adjustedManifest);
+    jarOutputStream = new JarOutputStream(outputStream, manifest);
   }
 
   public void addBootJar(File jarFile)

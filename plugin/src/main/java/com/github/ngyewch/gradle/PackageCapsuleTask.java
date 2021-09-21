@@ -5,8 +5,10 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-import org.gradle.api.artifacts.*;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.BasePluginConvention;
 import org.gradle.api.plugins.JavaApplication;
 import org.gradle.api.provider.MapProperty;
@@ -17,10 +19,13 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.bundling.Jar;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 
@@ -57,11 +62,21 @@ public abstract class PackageCapsuleTask
 
   @Input
   @Optional
-  public abstract Property<String> getMainClass();
+  public abstract MapProperty<String, String> getManifestAttributes();
 
   @Input
-  @Optional
-  public abstract MapProperty<String, String> getManifestAttributes();
+  private final CapsuleManifest capsuleManifest;
+
+  @Inject
+  public PackageCapsuleTask(ObjectFactory objectFactory) {
+    super();
+
+    capsuleManifest = objectFactory.newInstance(CapsuleManifest.class);
+  }
+
+  public CapsuleManifest getCapsuleManifest() {
+    return capsuleManifest;
+  }
 
   @TaskAction
   public void action()
@@ -92,7 +107,6 @@ public abstract class PackageCapsuleTask
 
     private void action()
         throws IOException {
-      final String mainClass = doGetMainClass();
       final Configuration capsuleConfiguration = doGetCapsuleConfiguration();
       final Configuration embedConfiguration = doGetEmbedConfiguration();
       final Map<String, String> manifestAttributes = doGetManifestAttributes();
@@ -106,13 +120,12 @@ public abstract class PackageCapsuleTask
       libsDir.mkdirs();
       final File outputFile = new File(libsDir, getArchiveFileName());
 
-      final Manifest manifest = new Manifest();
+      final Manifest manifest = createManifest();
       for (final Map.Entry<String, String> entry : manifestAttributes.entrySet()) {
         manifest.getMainAttributes().putValue(entry.getKey(), entry.getValue());
       }
 
-      try (final CapsulePackager capsulePackager = new CapsulePackager(new FileOutputStream(outputFile), mainClass,
-          manifest)) {
+      try (final CapsulePackager capsulePackager = new CapsulePackager(new FileOutputStream(outputFile), manifest)) {
         for (final ResolvedArtifact resolvedArtifact : capsuleResolvedArtifacts) {
           getLogger().info("adding boot classes: {}", resolvedArtifact.getModuleVersion());
           capsulePackager.addBootJar(resolvedArtifact.getFile());
@@ -201,24 +214,147 @@ public abstract class PackageCapsuleTask
           .getOrElse(getProject().getConfigurations().getByName("runtimeClasspath"));
     }
 
-    private String doGetMainClass() {
-      if (getMainClass().isPresent()) {
-        return getMainClass().get();
-      }
-      final JavaApplication javaApplication = getProject().getExtensions().findByType(JavaApplication.class);
-      if (javaApplication == null) {
-        throw new GradleException("mainClass not specified");
-      }
-      if (javaApplication.getMainClass().isPresent()) {
-        return javaApplication.getMainClass().get();
-      }
-      throw new GradleException("mainClass not specified");
-    }
-
     private Map<String, String> doGetManifestAttributes() {
       return getManifestAttributes()
           .orElse(capsuleExtension.getManifestAttributes())
           .getOrElse(new HashMap<>());
+    }
+
+    private Manifest createManifest() {
+      final CompositeCapsuleManifest merged = new CompositeCapsuleManifest();
+
+      final Manifest manifest = new Manifest();
+      final Attributes mainAttributes = manifest.getMainAttributes();
+      mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
+
+      mainAttributes.put(Attributes.Name.MAIN_CLASS, "Capsule");
+      mainAttributes.putValue("Premain-Class", "Capsule");
+
+      populateManifest(mainAttributes, "Application-ID", merged.getApplicationId());
+      populateManifest(mainAttributes, "Application-Version", merged.getApplicationVersion());
+      populateManifest(mainAttributes, "Application-Name", merged.getApplicationName());
+      populateManifest(mainAttributes, "Application-Class", merged.getApplicationClass());
+      populateManifest(mainAttributes, "Min-Java-Version", merged.getMinJavaVersion());
+      populateManifest(mainAttributes, "Java-Version", merged.getJavaVersion());
+      populateManifestBoolean(mainAttributes, "JDK-Required", merged.getJdkRequired());
+      populateManifestStringList(mainAttributes, "JVM-Args", merged.getJvmArgs());
+      populateManifestStringList(mainAttributes, "Args", merged.getArgs());
+      populateManifestStringMap(mainAttributes, "Environment-Variables", merged.getEnvironmentVariables());
+      populateManifestStringMap(mainAttributes, "System-Properties", merged.getSystemProperties());
+
+      return manifest;
+    }
+
+    private void populateManifest(Attributes attributes, String name, Provider<String> stringProvider) {
+      if (stringProvider.isPresent()) {
+        attributes.putValue(name, stringProvider.get());
+      }
+    }
+
+    private void populateManifestBoolean(Attributes attributes, String name, Provider<Boolean> booleanProvider) {
+      if (booleanProvider.isPresent()) {
+        attributes.putValue(name, booleanProvider.get().toString());
+      }
+    }
+
+    private void populateManifestStringMap(Attributes attributes, String name,
+                                           Provider<Map<String, String>> stringMapProvider) {
+      if (stringMapProvider.isPresent()) {
+        if (stringMapProvider.get().isEmpty()) {
+          return;
+        }
+        attributes.putValue(name, stringMapProvider.get().entrySet().stream()
+            .map(entry -> String.format("%s=%s", entry.getKey(), entry.getValue()))
+            .collect(Collectors.joining(" ")));
+      }
+    }
+
+    private void populateManifestStringList(Attributes attributes, String name,
+                                            Provider<List<String>> stringListProvider) {
+      if (stringListProvider.isPresent()) {
+        if (stringListProvider.get().isEmpty()) {
+          return;
+        }
+        attributes.putValue(name, StringUtils.join(stringListProvider.get(), " "));
+      }
+    }
+
+    private class CompositeCapsuleManifest {
+
+      private final CapsuleManifest taskCapsuleManifest;
+      private final CapsuleManifest extensionCapsuleManifest;
+
+      private CompositeCapsuleManifest() {
+        super();
+
+        taskCapsuleManifest = capsuleManifest;
+        extensionCapsuleManifest = capsuleExtension.getCapsuleManifest();
+      }
+
+      public Provider<String> getApplicationId() {
+        return taskCapsuleManifest.getApplicationId()
+            .orElse(extensionCapsuleManifest.getApplicationId());
+      }
+
+      public Provider<String> getApplicationVersion() {
+        return taskCapsuleManifest.getApplicationVersion()
+            .orElse(extensionCapsuleManifest.getApplicationVersion());
+      }
+
+      public Provider<String> getApplicationName() {
+        return taskCapsuleManifest.getApplicationName()
+            .orElse(extensionCapsuleManifest.getApplicationName());
+      }
+
+      public Provider<String> getApplicationClass() {
+        return taskCapsuleManifest.getApplicationClass()
+            .orElse(extensionCapsuleManifest.getApplicationClass())
+            .orElse(project.getProviders().provider((Callable<String>) () -> {
+              final JavaApplication javaApplication = getProject().getExtensions().findByType(JavaApplication.class);
+              if (javaApplication == null) {
+                throw new GradleException("mainClass not specified");
+              }
+              if (javaApplication.getMainClass().isPresent()) {
+                return javaApplication.getMainClass().get();
+              }
+              throw new GradleException("mainClass not specified");
+            }));
+      }
+
+      public Provider<String> getMinJavaVersion() {
+        return taskCapsuleManifest.getMinJavaVersion()
+            .orElse(extensionCapsuleManifest.getMinJavaVersion());
+      }
+
+      public Provider<String> getJavaVersion() {
+        return taskCapsuleManifest.getJavaVersion()
+            .orElse(extensionCapsuleManifest.getJavaVersion());
+      }
+
+      public Provider<Boolean> getJdkRequired() {
+        return taskCapsuleManifest.getJdkRequired()
+            .orElse(extensionCapsuleManifest.getJdkRequired());
+      }
+
+      public Provider<List<String>> getJvmArgs() {
+        return taskCapsuleManifest.getJvmArgs()
+            .orElse(extensionCapsuleManifest.getJvmArgs());
+      }
+
+      public Provider<List<String>> getArgs() {
+        return taskCapsuleManifest.getArgs()
+            .orElse(extensionCapsuleManifest.getArgs());
+      }
+
+      public Provider<Map<String, String>> getEnvironmentVariables() {
+        return taskCapsuleManifest.getEnvironmentVariables()
+            .orElse(extensionCapsuleManifest.getEnvironmentVariables());
+      }
+
+      public Provider<Map<String, String>> getSystemProperties() {
+        return taskCapsuleManifest.getSystemProperties()
+            .orElse(extensionCapsuleManifest.getSystemProperties());
+      }
     }
   }
 }
