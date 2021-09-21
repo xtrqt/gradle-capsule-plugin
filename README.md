@@ -71,7 +71,6 @@ Kotlin DSL (`build.gradle.kts`)
 tasks {
     register<com.github.ngyewch.gradle.PackageCapsuleTask>("packageFatCapsule2") {
         dependsOn("jar")
-        mainClass.set("Main2")
         archiveBaseName.set("test")
         embedConfiguration.set(configurations.getByName("runtimeClasspath"))
         manifestAttributes.set(mapOf("Test-Attribute" to "Test-Value"))
@@ -83,7 +82,6 @@ Groovy DSL (`build.gradle`)
 ```
 tasks.register("packageFatCapsule2", com.github.ngyewch.gradle.PackageCapsuleTask) {
   dependsOn "jar"
-  mainClass = "Main2"
   archiveBaseName = "test"
   embedConfiguration = configurations.getByName("runtimeClasspath")
   manifestAttributes = ["Test-Attribute": "Test-Value"]
@@ -92,7 +90,6 @@ tasks.register("packageFatCapsule2", com.github.ngyewch.gradle.PackageCapsuleTas
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| `mainClass` | `String` | No | Main class name. | 
 | `version` | `String` | No | Capsule version. Default: `1.0.3` |
 | `archiveBaseName` | `String` | No | Archive base name. Default: `project.archivesBaseName` |
 | `archiveAppendix` | `String` | No | Archive appendix. |
@@ -101,6 +98,7 @@ tasks.register("packageFatCapsule2", com.github.ngyewch.gradle.PackageCapsuleTas
 | `archiveExtension` | `String` | No | Archive extension. Default: `"jar"` |
 | `embedConfiguration` | `org.gradle.api.artifacts.Configuration` | No | Embed configuration. Library artifacts to include in the capsule. Default: `configurations.getByName("runtimeClasspath")` |
 | `manifestAttributes` | `Map<String, String>` | No | Manifest attributes. |
+| `capsuleManifest` | `com.github.ngyewch.gradle.CapsuleManifest` | No | Capsule manifest. |
 
 ## Extension
 
@@ -136,3 +134,20 @@ capsule {
 | `archiveExtension` | `String` | No | Archive extension. Default: `"jar"` |
 | `embedConfiguration` | `org.gradle.api.artifacts.Configuration` | No | Embed configuration. Library artifacts to include in the capsule. Default: `configurations.getByName("runtimeClasspath")` |
 | `manifestAttributes` | `Map<String, String>` | No | Manifest attributes. |
+| `capsuleManifest` | `com.github.ngyewch.gradle.CapsuleManifest` | No | Capsule manifest. |
+
+## CapsuleManifest
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `applicationId` | `String` | No | Application ID. |
+| `applicationVersion` | `String` | No | Application version. Default: `project.version` |
+| `applicationName` | `String` | No | Application name. |
+| `applicationClass` | `String` | No | Application class. |
+| `minJavaVersion` | `String` | No | Min Java version. |
+| `javaVersion` | `String` | No | Java version. |
+| `jdkRequired` | `Boolean` | No | JDK required. |
+| `jvmArgs` | `List<String>` | No | JVM args. |
+| `args` | `List<String>` | No | Args. |
+| `environmentVariables` | `Map<String, String>` | No | Environment variables. |
+| `systemProperties` | `Map<String, String>` | No | System properties. |
