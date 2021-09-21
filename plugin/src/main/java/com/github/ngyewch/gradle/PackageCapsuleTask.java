@@ -298,7 +298,17 @@ public abstract class PackageCapsuleTask
 
       public Provider<String> getApplicationVersion() {
         return taskCapsuleManifest.getApplicationVersion()
-            .orElse(extensionCapsuleManifest.getApplicationVersion());
+            .orElse(extensionCapsuleManifest.getApplicationVersion())
+            .orElse(project.getProviders().provider((Callable<String>) () -> {
+              if (project.getVersion() == null) {
+                return null;
+              }
+              final String version = project.getVersion().toString();
+              if (version.equals("unspecified")) {
+                return null;
+              }
+              return version;
+            }));
       }
 
       public Provider<String> getApplicationName() {
