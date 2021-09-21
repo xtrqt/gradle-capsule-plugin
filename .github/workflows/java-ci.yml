@@ -15,12 +15,6 @@ jobs:
       - name: Build with Gradle
         working-directory: plugin
         run: ./gradlew build
-      - name: Test composite build
-        working-directory: tests/composite-build/subproject3
-        run: ./gradlew packageFatCapsule
-      - name: Test Kotlin DSL build
-        working-directory: tests/kotlin-dsl
-        run: ./gradlew packageFatCapsule
-      - name: Test Groovy DSL build
-        working-directory: tests/groovy-dsl
-        run: ./gradlew packageFatCapsule
+      - name: Run tests
+        working-directory: tests/test-driver
+        run: ./gradlew test
