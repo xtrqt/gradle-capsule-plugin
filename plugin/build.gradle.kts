@@ -1,8 +1,10 @@
 plugins {
     `java-gradle-plugin`
+    `maven-publish`
     id("ca.cutterslade.analyze") version "1.8.1"
     id("com.asarkar.gradle.build-time-tracker") version "3.0.1"
     id("com.github.ben-manes.versions") version "0.39.0"
+    id("com.gradle.plugin-publish") version "0.16.0"
     id("me.qoomon.git-versioning") version "5.1.0"
     id("se.ascp.gradle.gradle-versions-filter") version "0.1.10"
 }
@@ -40,7 +42,15 @@ gradlePlugin {
     plugins {
         create("gradle-capsule-plugin") {
             id = "com.github.ngyewch.capsule"
+            displayName = "Gradle Capsule Plugin"
+            description = "Gradle plugin for Capsule."
             implementationClass = "com.github.ngyewch.gradle.CapsulePlugin"
         }
     }
+}
+
+pluginBundle {
+    website = "https://github.com/ngyewch/gradle-capsule-plugin"
+    vcsUrl = "https://github.com/ngyewch/gradle-capsule-plugin.git"
+    tags = listOf("capsule")
 }
