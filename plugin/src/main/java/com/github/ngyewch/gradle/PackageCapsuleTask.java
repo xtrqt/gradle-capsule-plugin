@@ -1,10 +1,7 @@
 package com.github.ngyewch.gradle;
 
 import org.apache.commons.lang3.StringUtils;
-import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
-import org.gradle.api.Project;
-import org.gradle.api.Task;
+import org.gradle.api.*;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.file.FileCollection;
@@ -76,6 +73,10 @@ public abstract class PackageCapsuleTask
 
   public CapsuleManifest getCapsuleManifest() {
     return capsuleManifest;
+  }
+
+  public void capsuleManifest(Action<CapsuleManifest> action) {
+    action.execute(capsuleManifest);
   }
 
   @TaskAction
@@ -347,24 +348,52 @@ public abstract class PackageCapsuleTask
       }
 
       public Provider<List<String>> getJvmArgs() {
-        return taskCapsuleManifest.getJvmArgs()
-            .orElse(extensionCapsuleManifest.getJvmArgs());
+        return taskCapsuleManifest.getJvmArgs().map(ListTransformer.INSTANCE)
+            .orElse(extensionCapsuleManifest.getJvmArgs().map(ListTransformer.INSTANCE));
       }
 
       public Provider<List<String>> getArgs() {
-        return taskCapsuleManifest.getArgs()
-            .orElse(extensionCapsuleManifest.getArgs());
+        return taskCapsuleManifest.getArgs().map(ListTransformer.INSTANCE)
+            .orElse(extensionCapsuleManifest.getArgs().map(ListTransformer.INSTANCE));
       }
 
       public Provider<Map<String, String>> getEnvironmentVariables() {
-        return taskCapsuleManifest.getEnvironmentVariables()
-            .orElse(extensionCapsuleManifest.getEnvironmentVariables());
+        return taskCapsuleManifest.getEnvironmentVariables().map(MapTransformer.INSTANCE)
+            .orElse(extensionCapsuleManifest.getEnvironmentVariables().map(MapTransformer.INSTANCE));
       }
 
       public Provider<Map<String, String>> getSystemProperties() {
-        return taskCapsuleManifest.getSystemProperties()
-            .orElse(extensionCapsuleManifest.getSystemProperties());
+        return taskCapsuleManifest.getSystemProperties().map(MapTransformer.INSTANCE)
+            .orElse(extensionCapsuleManifest.getSystemProperties().map(MapTransformer.INSTANCE));
       }
+    }
+  }
+
+  private static class ListTransformer
+      implements Transformer<List<String>, List<String>> {
+
+    private static ListTransformer INSTANCE = new ListTransformer();
+
+    @Override
+    public List<String> transform(List<String> strings) {
+      if ((strings == null) || strings.isEmpty()) {
+        return null;
+      }
+      return strings;
+    }
+  }
+
+  private static class MapTransformer
+      implements Transformer<Map<String, String>, Map<String, String>> {
+
+    private static MapTransformer INSTANCE = new MapTransformer();
+
+    @Override
+    public Map<String, String> transform(Map<String, String> stringMap) {
+      if ((stringMap == null) || stringMap.isEmpty()) {
+        return null;
+      }
+      return stringMap;
     }
   }
 }

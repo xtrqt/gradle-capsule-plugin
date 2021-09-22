@@ -1,5 +1,7 @@
 package com.github.ngyewch.gradle;
 
+import groovy.lang.Closure;
+import org.gradle.api.Action;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.MapProperty;
@@ -36,5 +38,9 @@ public abstract class CapsuleExtension {
 
   public CapsuleManifest getCapsuleManifest() {
     return capsuleManifest;
+  }
+
+  public void capsuleManifest(Action<CapsuleManifest> action) {
+    action.execute(capsuleManifest);
   }
 }
