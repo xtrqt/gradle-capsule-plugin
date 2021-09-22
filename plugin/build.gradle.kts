@@ -14,6 +14,7 @@ version = "0.0.0-SNAPSHOT"
 gitVersioning.apply {
     refs {
         tag("v(?<version>.*)") {
+            considerTagsOnBranches = true
             version = "\${ref.version}"
         }
         branch(".+") {
