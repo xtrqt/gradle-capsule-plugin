@@ -15,7 +15,7 @@ public class Tests {
     final String output = StringUtils.trimToNull(new ProcessExecutor().command("java", "-jar",
             "../composite-build/subproject3/my-app/build/libs/my-app-capsule.jar")
         .exitValue(0)
-        .redirectError(new NullOutputStream())
+        .redirectError(System.err)
         .readOutput(true).execute()
         .outputUTF8());
     Assert.assertEquals("Hello, Bob!", output);
@@ -27,7 +27,7 @@ public class Tests {
     final String output = StringUtils.trimToNull(new ProcessExecutor().command("java", "-jar",
             "../groovy-dsl/build/libs/groovy-dsl-capsule.jar")
         .exitValue(0)
-        .redirectError(new NullOutputStream())
+        .redirectError(System.err)
         .readOutput(true).execute()
         .outputUTF8());
     Assert.assertEquals("hELLO, bOB!", output);
@@ -39,9 +39,45 @@ public class Tests {
     final String output = StringUtils.trimToNull(new ProcessExecutor().command("java", "-jar",
             "../kotlin-dsl/build/libs/kotlin-dsl-capsule.jar")
         .exitValue(0)
-        .redirectError(new NullOutputStream())
+        .redirectError(System.err)
         .readOutput(true).execute()
         .outputUTF8());
     Assert.assertEquals("hELLO, bOB!", output);
+  }
+
+  @Test
+  public void testKitchenSink1()
+      throws IOException, InterruptedException, TimeoutException {
+    final String output = StringUtils.trimToNull(new ProcessExecutor().command("java", "-jar",
+            "../kitchen-sink/module1/build/libs/module1-capsule.jar")
+        .exitValue(0)
+        .redirectError(System.err)
+        .readOutput(true).execute()
+        .outputUTF8());
+    Assert.assertEquals("hELLO, bOB!", output);
+  }
+
+  @Test
+  public void testKitchenSink2_1()
+      throws IOException, InterruptedException, TimeoutException {
+    final String output = StringUtils.trimToNull(new ProcessExecutor().command("java", "-jar",
+            "../kitchen-sink/module2/build/libs/module2-all.jar")
+        .exitValue(0)
+        .redirectError(System.err)
+        .readOutput(true).execute()
+        .outputUTF8());
+    Assert.assertEquals("hELLO, bOB!", output);
+  }
+
+  @Test
+  public void testKitchenSink2_2()
+      throws IOException, InterruptedException, TimeoutException {
+    final String output = StringUtils.trimToNull(new ProcessExecutor().command("java", "-jar",
+            "../kitchen-sink/module2/build/libs/module2-capsule.jar")
+        .exitValue(1)
+        .redirectError(System.err)
+        .readOutput(true).execute()
+        .outputUTF8());
+    Assert.assertEquals(null, output);
   }
 }

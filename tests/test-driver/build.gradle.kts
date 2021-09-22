@@ -60,12 +60,22 @@ tasks {
         commandLine = listOf("./gradlew", "packageFatCapsule")
     }
 
+    register<Exec>("clean-kitchen-sink") {
+        workingDir = project.file("../kitchen-sink")
+        commandLine = listOf("./gradlew", "clean")
+    }
+
+    register<Exec>("build-kitchen-sink") {
+        workingDir = project.file("../kitchen-sink")
+        commandLine = listOf("./gradlew", "packageFatCapsule", ":module2:packageFatCapsule2")
+    }
+
     register("clean-external") {
-        dependsOn("clean-composite-build", "clean-groovy-dsl", "clean-kotlin-dsl")
+        dependsOn("clean-composite-build", "clean-groovy-dsl", "clean-kotlin-dsl", "clean-kitchen-sink")
     }
 
     register("build-external") {
-        dependsOn("build-composite-build", "build-groovy-dsl", "build-kotlin-dsl")
+        dependsOn("build-composite-build", "build-groovy-dsl", "build-kotlin-dsl", "build-kitchen-sink")
     }
 
     named<Test>("test") {
