@@ -6,6 +6,7 @@
 A Gradle plugin for [Capsule](https://github.com/puniverse/capsule).
 
 * Minimum Gradle version: 6.4
+* Latest tested Gradle version: 7.2
 * Minimum Java version: 8
 
 ## Basic usage
@@ -74,6 +75,9 @@ tasks {
         archiveBaseName.set("test")
         embedConfiguration.set(configurations.getByName("runtimeClasspath"))
         manifestAttributes.set(mapOf("Test-Attribute" to "Test-Value"))
+        capsuleManifest {
+            applicationId = "myjar"
+        }
     }
 }
 ```
@@ -81,10 +85,13 @@ tasks {
 Groovy DSL (`build.gradle`)
 ```
 tasks.register("packageFatCapsule2", com.github.ngyewch.gradle.PackageCapsuleTask) {
-  dependsOn "jar"
-  archiveBaseName = "test"
-  embedConfiguration = configurations.getByName("runtimeClasspath")
-  manifestAttributes = ["Test-Attribute": "Test-Value"]
+    dependsOn "jar"
+    archiveBaseName = "test"
+    embedConfiguration = configurations.getByName("runtimeClasspath")
+    manifestAttributes = ["Test-Attribute": "Test-Value"]
+    capsuleManifest {
+        applicationId = "myjar"
+    }
 }
 ```
 
@@ -110,6 +117,9 @@ capsule {
     archiveClassifier.set("all")
     embedConfiguration.set(configurations.getByName("runtimeClasspath")) 
     manifestAttributes.set(mapOf("Test-Attribute" to "Test-Value"))
+    capsuleManifest {
+        applicationId = "myjar"
+    }
 }
 ```
 
@@ -121,6 +131,9 @@ capsule {
     archiveClassifier = "all"
     embedConfiguration = configurations.getByName("runtimeClasspath")
     manifestAttributes = ["Test-Attribute": "Test-Value"]
+    capsuleManifest {
+        applicationId = "myjar"
+    }
 }
 ```
 
