@@ -15,7 +15,7 @@ Kotlin DSL (`build.gradle.kts`)
 ```
 plugins {
     application
-    id 'com.github.ngyewch.capsule'
+    id("com.github.ngyewch.capsule")
 }
 
 application {
@@ -31,7 +31,7 @@ plugins {
 }
 
 application {
-    mainClass = 'org.gradle.sample.Main'
+    mainClass = "org.gradle.sample.Main"
 }
 ```
 
@@ -111,7 +111,7 @@ tasks.register("packageFatCapsule2", com.github.ngyewch.gradle.PackageCapsuleTas
 
 Kotlin DSL (`build.gradle.kts`)
 ```
-# sample configuration, using all properties (including optional ones) 
+# sample configuration, using some properties (including optional ones) 
 capsule {
     archiveBaseName.set("myjar")
     archiveClassifier.set("all")
@@ -125,7 +125,7 @@ capsule {
 
 Groovy DSL (`build.gradle`)
 ```
-# sample configuration, using all properties (including optional ones) 
+# sample configuration, using some properties (including optional ones) 
 capsule {
     archiveBaseName = "myjar"
     archiveClassifier = "all"
