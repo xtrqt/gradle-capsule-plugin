@@ -12,5 +12,5 @@ repositories {
 }
 
 application {
-    mainClass.set("mypackage.GroovyTest")
+    mainClass = "mypackage.GroovyTest"
 }
