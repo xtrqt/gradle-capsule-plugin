@@ -11,3 +11,7 @@ dependencies {
 application {
     mainClass.set("mypackage.MyApp")
 }
+
+tasks.named("packageFatCapsule") {
+    dependsOn("build")  // required for composite builds
+}
