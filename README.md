@@ -76,7 +76,7 @@ tasks {
         embedConfiguration.set(configurations.getByName("runtimeClasspath"))
         manifestAttributes.set(mapOf("Test-Attribute" to "Test-Value"))
         capsuleManifest {
-            applicationId = "myjar"
+            applicationId.set("myjar")
         }
     }
 }
@@ -118,7 +118,7 @@ capsule {
     embedConfiguration.set(configurations.getByName("runtimeClasspath")) 
     manifestAttributes.set(mapOf("Test-Attribute" to "Test-Value"))
     capsuleManifest {
-        applicationId = "myjar"
+        applicationId.set("myjar")
     }
 }
 ```
