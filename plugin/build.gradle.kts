@@ -1,12 +1,12 @@
 plugins {
     `java-gradle-plugin`
     `maven-publish`
-    id("ca.cutterslade.analyze") version "1.8.3"
-    id("com.asarkar.gradle.build-time-tracker") version "4.0.0"
+    id("ca.cutterslade.analyze") version "1.9.0"
+    id("com.asarkar.gradle.build-time-tracker") version "4.3.0"
     id("com.github.ben-manes.versions") version "0.42.0"
-    id("com.gradle.plugin-publish") version "0.20.0"
-    id("me.qoomon.git-versioning") version "5.1.5"
-    id("se.ascp.gradle.gradle-versions-filter") version "0.1.10"
+    id("com.gradle.plugin-publish") version "0.21.0"
+    id("me.qoomon.git-versioning") version "6.1.4"
+    id("se.ascp.gradle.gradle-versions-filter") version "0.1.16"
 }
 
 group = "com.github.ngyewch.gradle"
