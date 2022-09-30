@@ -1,6 +1,5 @@
 package com.github.ngyewch.gradle;
 
-import groovy.lang.Closure;
 import org.gradle.api.Action;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.model.ObjectFactory;
@@ -19,6 +18,8 @@ public abstract class CapsuleExtension {
 
     capsuleManifest = objectFactory.newInstance(CapsuleManifest.class);
   }
+
+  public abstract Property<String> getGroup();
 
   public abstract Property<String> getVersion();
 

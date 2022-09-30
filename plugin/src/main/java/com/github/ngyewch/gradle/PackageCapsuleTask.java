@@ -29,7 +29,8 @@ import java.util.stream.Collectors;
 public abstract class PackageCapsuleTask
     extends DefaultTask {
 
-  private static final String DEFAULT_CAPSULE_VERSION = "1.0.3";
+  private static final String DEFAULT_CAPSULE_GROUP = "io.nextflow";
+  private static final String DEFAULT_CAPSULE_VERSION = "1.1.1";
   private static final String DEFAULT_CLASSIFIER = "capsule";
   private static final String DEFAULT_EXTENSION = "jar";
 
@@ -200,9 +201,13 @@ public abstract class PackageCapsuleTask
       if (configuration == null) {
         configuration = getProject().getConfigurations().create("capsule");
         getProject().getDependencies().add("capsule",
-            String.format("co.paralleluniverse:capsule:%s", doGetCapsuleVersion()));
+            String.format("%s:capsule:%s", doGetCapsuleGroup(), doGetCapsuleVersion()));
       }
       return configuration;
+    }
+
+    private String doGetCapsuleGroup() {
+      return capsuleExtension.getGroup().getOrElse(DEFAULT_CAPSULE_GROUP);
     }
 
     private String doGetCapsuleVersion() {

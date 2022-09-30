@@ -99,17 +99,18 @@ tasks.register("packageFatCapsule2", com.github.ngyewch.gradle.PackageCapsuleTas
 }
 ```
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `version` | `String` | No | Capsule version. Default: `1.0.3` |
-| `archiveBaseName` | `String` | No | Archive base name. Default: `project.archivesBaseName` |
-| `archiveAppendix` | `String` | No | Archive appendix. |
-| `archiveVersion` | `String` | No | Archive version. Default: `project.version` |
-| `archiveClassifier` | `String` | No | Archive classifier. Default: `"capsule"` |
-| `archiveExtension` | `String` | No | Archive extension. Default: `"jar"` |
+| Name                 | Type | Required | Description                                                                                                               |
+|----------------------| --- | --- |---------------------------------------------------------------------------------------------------------------------------|
+| `group`              | `String` | No | Capsule group. Default: `io.nextflow`                                                                                     |
+| `version`            | `String` | No | Capsule version. Default: `1.1.1`                                                                                         |
+| `archiveBaseName`    | `String` | No | Archive base name. Default: `project.archivesBaseName`                                                                    |
+| `archiveAppendix`    | `String` | No | Archive appendix.                                                                                                         |
+| `archiveVersion`     | `String` | No | Archive version. Default: `project.version`                                                                               |
+| `archiveClassifier`  | `String` | No | Archive classifier. Default: `"capsule"`                                                                                  |
+| `archiveExtension`   | `String` | No | Archive extension. Default: `"jar"`                                                                                       |
 | `embedConfiguration` | `org.gradle.api.artifacts.Configuration` | No | Embed configuration. Library artifacts to include in the capsule. Default: `configurations.getByName("runtimeClasspath")` |
-| `manifestAttributes` | `Map<String, String>` | No | Manifest attributes. |
-| `capsuleManifest` | `com.github.ngyewch.gradle.CapsuleManifest` | No | Capsule manifest. |
+| `manifestAttributes` | `Map<String, String>` | No | Manifest attributes.                                                                                                      |
+| `capsuleManifest`    | `com.github.ngyewch.gradle.CapsuleManifest` | No | Capsule manifest.                                                                                                         |
 
 ## Extension
 
