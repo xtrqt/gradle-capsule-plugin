@@ -5,7 +5,7 @@
 A Gradle plugin for [Capsule](https://github.com/puniverse/capsule).
 
 * Minimum Gradle version: 6.4
-* Latest tested Gradle version: 7.2
+* Latest tested Gradle version: 7.5.1
 * Minimum Java version: 8
 
 ## Installation
