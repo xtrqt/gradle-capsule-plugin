@@ -1,7 +1,6 @@
 # gradle-capsule-plugin
 
-![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/ngyewch/gradle-capsule-plugin)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ngyewch/gradle-capsule-plugin/Java%20CI)
+[![Build](https://github.com/ngyewch/gradle-capsule-plugin/actions/workflows/build.yml/badge.svg)](https://github.com/ngyewch/gradle-capsule-plugin/actions/workflows/build.yml)
 
 A Gradle plugin for [Capsule](https://github.com/puniverse/capsule).
 
