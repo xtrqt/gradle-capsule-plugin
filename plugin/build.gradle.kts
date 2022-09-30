@@ -4,24 +4,12 @@ plugins {
     id("ca.cutterslade.analyze") version "1.9.0"
     id("com.asarkar.gradle.build-time-tracker") version "4.3.0"
     id("com.github.ben-manes.versions") version "0.42.0"
-    id("com.gradle.plugin-publish") version "0.21.0"
-    id("me.qoomon.git-versioning") version "6.1.4"
+    id("io.github.ngyewch.git-describe") version "0.2.0"
+    id("com.gradle.plugin-publish") version "1.0.0"
     id("se.ascp.gradle.gradle-versions-filter") version "0.1.16"
 }
 
 group = "com.github.ngyewch.gradle"
-version = "0.0.0-SNAPSHOT"
-gitVersioning.apply {
-    refs {
-        tag("v(?<version>.*)") {
-            considerTagsOnBranches = true
-            version = "\${ref.version}"
-        }
-        branch(".+") {
-            version = "\${ref}-SNAPSHOT"
-        }
-    }
-}
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
