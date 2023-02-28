@@ -186,7 +186,7 @@ public abstract class PackageCapsuleTask
       final List<String> archiveNameParts = archiveNamePartProviders.stream()
           .filter(Provider::isPresent)
           .map(Provider::get)
-          .filter(part -> !part.isBlank())
+          .filter(part -> !StringUtils.isBlank(part))
           .collect(Collectors.toList());
 
       final String extension = getArchiveExtension()
